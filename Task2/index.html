@@ -30,7 +30,7 @@
 			css: {background:'#3498db'},
 			cols: [
     			{ view: "template", template:"MyApp!", type: "header", borderless: true, autoWidth: true },
-    			{ view: "button", value: "Profile", type:"icon", icon:"user", label:"Profile", css: "bluebutton", id: "btn_Profile", width: "120" }
+    			{ view: "button", value: "Profile", type:"icon", icon:"user", label:"Profile", css: "bluebutton", id: "btn_Profile", width: "140" }
 			]};
 
 		var main = {
@@ -41,7 +41,7 @@
 				{ view: "resizer"},
 				{ view: "datatable", id:"dataTable", data: small_film_set, autoConfig: true, gravity: 3, scrollX: false },
 
-				{ view: "form", id: "addFilmForm", minWidth: "220", elements:[
+				{ view: "form", id: "addFilmForm", minWidth: "250", elements:[
 
         			{ template:"Edit Films", type:"section"},
         			{ view:"text", label:"Title", name: "title",invalidMessage:"Title is Required!" },
@@ -88,7 +88,12 @@
 		webix.ui({
     		id: "app",
     		rows: [ header, main, footer]
-	});
+		});
+
+		$$("dataTable").attachEvent("onItemClick", function(id){
+   			var filmData = $$("dataTable").getItem( id );
+   			$$("addFilmForm").setValues( filmData );
+		});
 
   </script>
 </body>
