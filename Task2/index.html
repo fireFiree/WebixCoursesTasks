@@ -91,6 +91,7 @@
 		});
 
 		$$("dataTable").attachEvent("onItemClick", function(id){
+			$$("addFilmForm").clearValidation();
    			var filmData = $$("dataTable").getItem( id );
    			$$("addFilmForm").setValues( filmData );
 		});
