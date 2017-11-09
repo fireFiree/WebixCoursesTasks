@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Task 1 Webix</title>
+	<script src="webix_debug.js"></script>
+	<script src="testdata.js"></script>
+	<link rel="stylesheet" href="webix.css"></link>
+</head>
+<body>
+	
+	<style>
+		.alignCenter {
+			text-align: center;
+		}
+		.greenColor{
+			color: green;
+		}
+		.bluebutton.webix_el_button button{
+  			color: white;
+		}
+
+		span.webix_icon_btn.fa-user {
+			color:white;
+		}
+
+	</style>
+	<script type="text/javascript" charset="utf-8">
+
+		var header = {
+			css: {background:'#3498db'},
+			cols: [
+    			{ view: "template", template:"MyApp!", type: "header", borderless: true, autoWidth: true },
+    			{ view: "button", value: "Profile", type:"icon", icon:"user", label:"Profile", css: "bluebutton", id: "btn_Profile", width: "120" }
+			]};
+
+		var main = {
+			cols: [ {rows:[	{ view: "list", scroll:false, data: ["Dashboard", "Users", "Products", "Locations"], gravity: 1, autoheight: true},
+							{ borderless: true},
+							{ view: "label", label: "<span class='webix_icon fa-check'></span> Connected", css: "greenColor", align: "center", autoheight: true}
+				]},	
+				{ view: "resizer"},
+				{ view: "datatable", id:"dataTable", data: small_film_set, autoConfig: true, gravity: 3, scrollX: false },
+
+				{ view: "form", id: "addFilmForm", minWidth: "220", elements:[
+
+        			{ template:"Edit Films", type:"section"},
+        			{ view:"text", label:"Title", name: "title",invalidMessage:"Title is Required!" },
+        			{ view:"text", label:"Year", name: "year",invalidMessage:"Invalid year!"},
+        			{ view:"text", label:"Rating", name: "rating", invalidMessage:"Rating is required!"},
+       				{ view:"text", label:"Votes", name: "votes", invalidMessage:"Invalid votes!"},
+       				{cols:[
+       					{ view:"button", value:"AddNew", id: "btn_AddNew", type:"form", click:function(){
+       						if($$("addFilmForm").validate()){
+       							var item = $$("addFilmForm").getValues();
+       							$$("dataTable").add(item);
+       							webix.message({text: "Succesed validation!"});
+       						}
+       					}},
+            			{ view:"button", id: "btn_Clear", value:"Clear", click:function(){
+            					$$("addFilmForm").clear();
+      							$$("addFilmForm").clearValidation();
+      						}
+      					}
+       				]},
+       			{}
+  				],rules:{
+  					title:webix.rules.isNotEmpty,
+  					year: function(year){
+  						return (year >= 1970 && year <= (new Date()).getFullYear());
+  					},
+  					rating: function(rating){
+  						return (rating != 0 && rating != "");
+  					},
+  					votes: function(votes){
+  						return (votes >= 0 && votes <= 100000);
+  					}
+  				}},
+  				
+			]};
+
+		var footer = {
+			view: "template",
+			align: "center",
+			autoheight: true,
+			template: "The software is provided by <a href='https://webix.com'>https://webix.com</a>. All right reserved (c)."
+		}
+
+		webix.ui({
+    		id: "app",
+    		rows: [ header, main, footer]
+	});
+
+  </script>
+</body>
+</html>
