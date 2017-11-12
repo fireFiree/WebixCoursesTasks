@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Task 3 Webix</title>
+	<script src="webix_debug.js"></script>
+	<script src="testdata.js"></script>
+	<link rel="stylesheet" href="webix.css"></link>
+</head>
+<body>
+	
+	<style>
+		.alignCenter {
+			text-align: center;
+		}
+		.greenColor{
+			color: green;
+		}
+		.bluebutton.webix_el_button button{
+  			color: white;
+		}
+
+		span.webix_icon_btn.fa-user {
+			color:white;
+		}
+
+	</style>
+	<script type="text/javascript" charset="utf-8">
+
+	/*function getJSONFromJs(path){
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', path, false);
+		xhr.send();
+		return xhr.responseText;
+
+	}*/
+
+	//I do not know how to get data from products.js, because the file contains js-object, NOT JSON. 
+	var products = [
+		{ id:"1", title:"Cinema", data:[
+			{ id:"1.1", title:"Standard Ticket", price: 21},
+			{ id:"1.2", title:"Evening Ticket", price: 27},
+		]},
+		{ id:"2", title:"Cafe", data:[
+			{ id:"2.1", title:"Cola", price: 10},
+			{ id:"2.2", title:"Mineral water", price: 5},
+			{ id:"2.3", title:"Pop Corn", price: 7}
+		]},
+		{ id:"3", title:"Other", data:[
+			{ id:"3.1", title:"Flowers", price: 10},
+			{ id:"3.2", title:"Film CD", price: 15}
+		]}
+	];
+	var users = [
+		{ id:1, name:"Alan Smith", age:57, country:"USA"},
+		{ id:2, name:"Nina Brown", age:32, country:"Germany"},
+		{ id:3, name:"Kevin Sallivan", age:21, country:"Canada"},
+		{ id:4, name:"Sergey Petrov", age:24, country:"Russia"},
+		{ id:5, name:"Mina Leen", age:40, country:"China"},
+		{ id:6, name:"Sam White", age:26, country:"USA"},
+		{ id:7, name:"Peter Olsten", age:40, country:"France"},
+		{ id:8, name:"Lina Rein", age:30, country:"Germany"},
+		{ id:9, name:"Many Cute", age:22, country:"Canada"},
+		{ id:10, name:"Andrew Wein", age:27, country:"Italy"},
+		{ id:11, name:"Paolo Sanders", age:40, country:"Spain"},
+		{ id:12, name:"Tanya Krieg", age:28, country:"Germany"}
+	];
+
+	var header = {
+		css: {background:'#3498db'},
+		cols: [
+			{ view: "template", template:"MyApp!", type: "header", borderless: true, autoWidth: true },
+			{ view: "button", value: "Profile", type:"icon", icon:"user", label:"Profile", css: "bluebutton", id: "btn_Profile",   width: "140" }
+		]};
+
+
+	function addItem(){
+
+		if($$("filmForm").validate()){
+			var item = $$("filmForm").getValues();
+			var newObj = {
+				id : $$("dataTable").count() +1,
+				title :item.title.replace(/<\/?[^>]+(>|$)/g, ""),
+				year :item.year.replace(/<\/?[^>]+(>|$)/g, ""),
+				rating :item.rating.replace(/<\/?[^>]+(>|$)/g, ""),
+				votes: item.votes.replace(/<\/?[^>]+(>|$)/g, ""),
+				rank: ""
+			};
+			$$("dataTable").add(newObj);
+			//webix.message({text: "Succesed validation!"});
+		}
+	}
+	function updateItem(){
+		var sel = $$("dataTable").getSelectedId();
+
+		if(!sel) return;
+				
+		var title = $$("filmForm").getValues().title;
+		var year = $$("filmForm").getValues().year;
+		var rating = $$("filmForm").getValues().rating;
+		var votes = $$("filmForm").getValues().votes;
+				
+			
+		var item = $$("dataTable").getItem(sel);
+		item.title = title.replace(/<\/?[^>]+(>|$)/g, "");
+		item.year = year.replace(/<\/?[^>]+(>|$)/g, "");
+		item.rating = rating.replace(/<\/?[^>]+(>|$)/g, "");
+		item.votes = votes.replace(/<\/?[^>]+(>|$)/g, "");
+
+		if($$("filmForm").validate()){
+			$$("dataTable").updateItem(sel, item);	
+		}
+	}
+	function clearForm(){
+		$$("filmForm").clear();
+		$$("filmForm").clearValidation();
+	}
+
+	var form = { view: "form", id: "filmForm", maxWidth:"300",
+				elements:[
+	        		{ template:"Edit Films", type:"section"},
+	        		{ view:"text", label:"Title", name: "title",invalidMessage:"Title is Required!" },
+	        		{ view:"text", label:"Year", name: "year",invalidMessage:"Invalid year!"},
+	        		{ view:"text", label:"Rating", name: "rating", invalidMessage:"Rating is required!"},
+	       			{ view:"text", label:"Votes", name: "votes", invalidMessage:"Invalid votes!"},
+	       			{cols:[
+
+   						{ view:"button", value:"Add", id: "btnAdd", type:"form", click:addItem },
+						{ view:"button", value:"Update", id: "btnUpdate", click:updateItem },
+						{ view:"button", id: "btnClear", value:"Clear", click: clearForm }
+   					]},
+   					{}
+					],
+					rules:{
+		  			title:webix.rules.isNotEmpty,
+		  			year: function(year){
+		  				return (year >= 1970 && year <= (new Date()).getFullYear());
+		  				},
+		  			rating: function(rating){
+		  				return (rating != 0 && rating != "");
+		  				},
+		  			votes: function(votes){
+		  				return (votes >= 0 && votes <= 100000);
+		  				}
+						}
+					};
+
+	var headFilter ={ cols:[
+		{view:"text", id:"titleFilter", placeholder:"Title Filter", on:{
+			onTimedKeyPress:function(){
+
+				var value = this.getValue().toLowerCase();
+       			$$("dataTable").filter( function(obj){
+            		return obj.title.toLowerCase().indexOf(value)==0;
+					});
+				}
+			}
+		},
+		{view:"text", id:"yearFilter", placeholder:"Year Filter", on:{
+			onTimedKeyPress:function(){
+
+				var value = this.getValue().toLowerCase();
+       			$$("dataTable").filter( function(obj){
+            		return obj.year.toLowerCase().indexOf(value)==0;
+					});
+				}
+			}
+		},
+		{view:"text", id:"ratingFilter", placeholder:"Rating Filter", on:{
+			onTimedKeyPress:function(){
+
+				var value = this.getValue().toLowerCase();
+       			$$("dataTable").filter( function(obj){
+            		return obj.rating.toLowerCase().indexOf(value)==0;
+					});
+				}
+			}
+		},
+		{view:"text", id:"votesFilter", placeholder:"Votes Filter", on:{
+			onTimedKeyPress:function(){
+
+				var value = this.getValue().toLowerCase();
+       			$$("dataTable").filter( function(obj){
+            		return obj.votes.toLowerCase().indexOf(value)==0;
+					});
+				}
+			}
+		},
+		{view:"text", id:"rankFilter", placeholder:"Rank Filter", on:{
+			onTimedKeyPress:function(){
+
+				var value = this.getValue().toLowerCase();
+       			$$("dataTable").filter( function(obj){
+            		return obj.rank.toLowerCase().indexOf(value)==0;
+					});
+				}
+			}
+		}
+	]};
+	
+	var dataTable = { view: "datatable", id:"dataTable", url:"data/data.js", autoWidth: true, scrollX: false, autoConfig: true 
+	};
+
+	var treeTable = { id:"Products", autoWidth: true, view:"treetable", scrollX: false, data: products,
+					on:{onAfterLoad:
+						function(){$$("Products").openAll();
+						}
+					},
+					columns: [
+					{ id:"id", header:"ID", width:50},
+      				{ id:"title", header:"Film Title", width:250, template:"{common.treetable()} #title#" },
+      				{ id:"price", header:"Price", width:200}
+	]}
+
+	function sortASC(){
+		$$("usersList").sort('#name#', 'asc');
+	}
+	function sortDESC(){
+		$$("usersList").sort('#name#', 'desc');
+	}
+
+	var chart = { id: "Users", autoWidth: true, rows:[
+			{ cols:[
+				{view:"text", id:"listFilter", placeholder: "Type of filter..."},
+				{view:"button", id:"sortASC", value:"Sort ASC", click: sortASC},
+				{view:"button", id:"sortDESC", value:"Sort DESC", click: sortDESC},
+				]},
+			{ view: "list", template:"<b>#name#</b> from #country#", id:"usersList", data: users},
+			{ view: "chart", id:"chart", value:"#age#", xAxis:{ template:"#age#"}, type:"bar", data: users}
+	]};
+
+	var main = { cols: [ 
+		{rows:[	{ view: "list", width:"300", scroll:false, data: ["Dashboard", "Users", "Products", "Locations"], select:true, 
+						autoheight: true, on:{
+											onAfterSelect:function(id){
+												$$(id).show();
+											}
+						}},
+				{ borderless: true},
+				{ view: "label", label: "<span class='webix_icon fa-check'></span> Connected", css: "greenColor", align: "center", autoheight: true}
+		]},	
+		{ view: "resizer"},
+		{ view:"multiview", animate:{type:"flip", subtype:"vertical"}, cells: [
+			{ id:"Dashboard", cols:[{rows:[ headFilter, dataTable]}, form]
+			},
+			chart,
+			treeTable,
+			{ id: "Locations", template: "Locations template", autoWidth: true}
+		]},
+				
+	]};
+
+	var footer = {
+		view: "template",
+		css: "alignCenter",
+		autoheight: true,
+		template: "The software is provided by <a href='https://webix.com'>https://webix.com</a>. All right reserved (c)."
+	}
+
+	webix.ui({
+		id: "app",
+		rows: [ header, main, footer]
+	});
+	$$("listFilter").attachEvent("onTimedKeyPress",function(){
+        var value = this.getValue().toLowerCase();
+        $$("usersList").filter( function(obj){
+            return obj.name.toLowerCase().indexOf(value)==0;
+        })
+    });
+
+	$$("dataTable").attachEvent("onItemClick", function(id){
+		$$("filmForm").clearValidation();
+			var filmData = $$("dataTable").getItem( id );
+			$$("filmForm").setValues( filmData );
+	});
+
+  </script>
+</body>
+</html>
