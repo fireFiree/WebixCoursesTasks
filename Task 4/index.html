@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Task 3 Webix</title>
+	<script src="webix_debug.js"></script>
+	<script src="testdata.js"></script>
+	<script src="views/header.js"></script>
+	<script src="views/main.js"></script>
+	<script src="views/footer.js"></script>
+	<link rel="stylesheet" href="webix.css"></link>
+</head>
+<body>
+	
+	<style>
+		.alignCenter {
+			text-align: center;
+		}
+		.greenColor{
+			color: green;
+		}
+		.bluebutton.webix_el_button button{
+  			color: white;
+		}
+
+		span.webix_icon_btn.fa-user {
+			color:white;
+		}
+
+	</style>
+	<script type="text/javascript" charset="utf-8">
+
+	webix.ui({
+		id: "app",
+		rows: [ header, main, footer]
+	});
+
+
+	$$("listFilter").attachEvent("onTimedKeyPress", function(){
+    	var value = this.getValue().toLowerCase();
+    	$$("usersList").filter( function(obj){
+        	return obj.name.toLowerCase().indexOf(value)==0;
+    	});
+	});
+
+	$$("filmForm").bind($$("dataTable"));
+
+	$$("filmForm").attachEvent("onChange", function(){
+		this.save();
+	});
+	$$("dataView").sync($$("dataTable"));
+
+	/*$$("dataTable").attachEvent("onItemClick", function(id){
+		$$("filmForm").clearValidation();
+			var filmData = $$("dataTable").getItem( id );
+			$$("filmForm").setValues( filmData );
+	});*/
+
+  </script>
+</body>
+</html>
